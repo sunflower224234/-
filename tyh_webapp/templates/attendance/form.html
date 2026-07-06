@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{% if record %}编辑考勤{% else %}录入考勤{% endif %}{% endblock %}
+{% block content %}
+<h5 class="mb-3"><i class="bi bi-{% if record %}pencil{% else %}plus-lg{% endif %}"></i> {% if record %}编辑考勤记录{% else %}录入考勤记录{% endif %}</h5>
+<div class="card shadow-sm"><div class="card-body p-4">
+<form method="POST">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label class="form-label">员工 <span class="text-danger">*</span></label>
+            <select name="eno" class="form-select" required {% if record %}disabled{% endif %}>
+                <option value="">请选择员工</option>
+                {% for e in employees %}
+                <option value="{{ e[0] }}" {% if record and record.eno==e[0] %}selected{% endif %}>{{ e[0] }} - {{ e[1] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2"><label class="form-label">年份</label><input type="number" name="year" class="form-control" value="{{ record.year if record else '' }}" min="2020" max="2100" required {% if record %}readonly{% endif %}></div>
+        <div class="col-md-2"><label class="form-label">月份</label><input type="number" name="month" class="form-control" value="{{ record.month if record else '' }}" min="1" max="12" required {% if record %}readonly{% endif %}></div>
+        <div class="col-md-2"><label class="form-label">应出勤天数</label><input type="number" step="0.5" name="wday" class="form-control" value="{{ record.wday if record else '22' }}" required></div>
+        <div class="col-md-2"><label class="form-label">实际出勤</label><input type="number" step="0.5" name="sj" class="form-control" value="{{ record.sj if record else '22' }}" required></div>
+        <div class="col-md-2"><label class="form-label">迟到天数</label><input type="number" name="cd" class="form-control" value="{{ record.cd if record else '0' }}" required></div>
+        <div class="col-md-3"><label class="form-label">加班费</label><input type="number" step="0.01" name="jiaban" class="form-control" value="{{ record.jiaban if record else '0' }}" required></div>
+        <div class="col-md-3"><label class="form-label">全勤奖</label><input type="number" step="0.01" name="allday" class="form-control" value="{{ record.allday if record else '0' }}" required></div>
+        <div class="col-md-3"><label class="form-label">缺勤扣款</label><input type="number" step="0.01" name="absence" class="form-control" value="{{ record.absence if record else '0' }}" required></div>
+        <div class="col-md-3"><label class="form-label">其他扣款</label><input type="number" step="0.01" name="other" class="form-control" value="{{ record.other if record else '0' }}" required></div>
+    </div>
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> 保存</button>
+        <a href="{{ url_for('attendance.list') }}" class="btn btn-outline-secondary">取消</a>
+    </div>
+</form>
+</div></div>
+{% endblock %}

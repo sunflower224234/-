@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}用户管理 - 员工工资管理系统{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5><i class="bi bi-shield-lock"></i> 用户管理</h5>
+    <a href="{{ url_for('user.create') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> 新建用户</a>
+</div>
+<div class="table-responsive">
+    <table class="table table-hover table-sm align-middle">
+        <thead class="table-light"><tr>
+            <th>用户名</th><th>关联员工</th><th>角色</th><th>失败次数</th><th>锁定状态</th><th>最后修改密码</th><th>操作</th>
+        </tr></thead>
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td class="fw-semibold">{{ u[0] }}</td>
+                <td>{{ u[2] or '--' }} {% if u[1] %}<small class="text-muted">{{ u[1] }}</small>{% endif %}</td>
+                <td><small>{{ u[6] or '未分配' }}</small></td>
+                <td>{{ u[3] }}</td>
+                <td>
+                    {% if u[4] and u[4] > now %}
+                    <span class="badge bg-danger">已锁定</span>
+                    {% else %}
+                    <span class="badge bg-success">正常</span>
+                    {% endif %}
+                </td>
+                <td><small>{{ u[5] }}</small></td>
+                <td>
+                    <a href="{{ url_for('user.edit', username=u[0]) }}" class="btn btn-sm btn-outline-warning" title="编辑"><i class="bi bi-pencil"></i></a>
+                    <form method="POST" action="{{ url_for('user.reset_password', username=u[0]) }}" class="d-inline"
+                          onsubmit="return confirm('确认重置 {{ u[0] }} 的密码为 Abc@12345？')">
+                        <button class="btn btn-sm btn-outline-info" title="重置密码"><i class="bi bi-key"></i></button>
+                    </form>
+                    <form method="POST" action="{{ url_for('user.toggle_lock', username=u[0]) }}" class="d-inline">
+                        <button class="btn btn-sm btn-outline-{{ 'success' if u[4] else 'danger' }}" title="{{ '解锁' if u[4] else '锁定' }}">
+                            <i class="bi bi-{{ 'unlock' if u[4] else 'lock' }}"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7" class="text-center py-4 text-muted">暂无用户数据</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

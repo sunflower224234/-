@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}员工管理 - 员工工资管理系统{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5><i class="bi bi-people"></i> 员工管理</h5>
+    {% if session.role_ids and (1 in session.role_ids or 2 in session.role_ids) %}
+    <a href="{{ url_for('employee.create') }}" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg"></i> 新增员工
+    </a>
+    {% endif %}
+</div>
+
+<form class="row g-2 mb-3">
+    <div class="col-md-4">
+        <input type="text" name="search" class="form-control form-control-sm"
+               placeholder="搜索姓名/编号/部门..." value="{{ search or '' }}">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-primary btn-sm"><i class="bi bi-search"></i> 搜索</button>
+        <a href="{{ url_for('employee.list') }}" class="btn btn-outline-secondary btn-sm">重置</a>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover table-sm align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>编号</th><th>姓名</th><th>部门</th><th>职位</th><th>职级</th>
+                <th>手机号</th><th>邮箱</th><th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in employees %}
+            <tr>
+                <td>{{ e[0] }}</td>
+                <td><a href="{{ url_for('employee.view', eno=e[0]) }}" class="fw-semibold text-decoration-none">{{ e[1] }}</a></td>
+                <td>{{ e[4] or '' }}</td>
+                <td>{{ e[2] }}</td>
+                <td><span class="badge bg-secondary">{{ e[3] }}</span></td>
+                <td><small class="text-muted">{{ e[5] or '' }}</small></td>
+                <td><small>{{ e[6] or '' }}</small></td>
+                <td>
+                    <a href="{{ url_for('employee.view', eno=e[0]) }}" class="btn btn-sm btn-outline-info" title="详情"><i class="bi bi-eye"></i></a>
+                    {% if session.role_ids and (1 in session.role_ids or 2 in session.role_ids) %}
+                    <a href="{{ url_for('employee.edit', eno=e[0]) }}" class="btn btn-sm btn-outline-warning" title="编辑"><i class="bi bi-pencil"></i></a>
+                    {% endif %}
+                    {% if session.role_ids and 1 in session.role_ids %}
+                    <form method="POST" action="{{ url_for('employee.delete', eno=e[0]) }}" class="d-inline"
+                          onsubmit="return confirm('确认删除员工 {{ e[1] }}？此操作不可恢复')">
+                        <button class="btn btn-sm btn-outline-danger" title="删除"><i class="bi bi-trash"></i></button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8" class="text-center py-4 text-muted">暂无员工数据</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}计算工资 - 员工工资管理系统{% endblock %}
+{% block content %}
+<h5 class="mb-3"><i class="bi bi-calculator"></i> 计算工资</h5>
+<p class="text-muted small">选择年份月份后执行计算，系统将自动调用 fn_tyh_CalcSalary08 存储过程为每位员工计算工资。</p>
+
+<div class="card shadow-sm mb-4"><div class="card-body p-4">
+<form method="POST">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-2">
+            <label class="form-label">年份</label>
+            <input type="number" name="year" class="form-control" value="{{ now.year }}" min="2020" max="2100" required>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">月份</label>
+            <input type="number" name="month" class="form-control" value="{{ now.month }}" min="1" max="12" required>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">计算模式</label>
+            <select name="mode" class="form-select" id="calcMode">
+                <option value="all">全部员工</option>
+                <option value="single">指定员工</option>
+            </select>
+        </div>
+        <div class="col-md-3" id="singleEmpGroup" style="display:none">
+            <label class="form-label">选择员工</label>
+            <select name="eno" class="form-select">
+                <option value="">请选择</option>
+                {% for e in employees %}
+                <option value="{{ e[0] }}">{{ e[0] }} - {{ e[1] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-success w-100"><i class="bi bi-play-fill"></i> 开始计算</button>
+        </div>
+    </div>
+</form>
+</div></div>
+
+{% if results is not none %}
+<div class="card shadow-sm"><div class="card-header fw-bold">
+    <i class="bi bi-list-check"></i> 计算结果：{{ result_year }}年{{ result_month }}月
+</div><div class="card-body p-0">
+    <table class="table table-sm table-hover mb-0">
+        <thead><tr><th>员工</th><th>状态</th><th>总收入</th><th>扣税</th><th>专项月均</th><th>实发工资</th><th>备注</th></tr></thead>
+        <tbody>
+            {% for r in results %}
+            <tr class="{{ 'table-success' if r.success else 'table-danger' }}">
+                <td>{{ r.ename }} <small class="text-muted">{{ r.eno }}</small></td>
+                <td>{% if r.success %}<span class="badge bg-success">成功</span>{% else %}<span class="badge bg-danger">失败</span>{% endif %}</td>
+                <td>{{ "%.2f"|format(r.gross or 0) }}</td>
+                <td>{{ "%.2f"|format(r.tax or 0) }}</td>
+                <td>{{ "%.2f"|format(r.special or 0) }}</td>
+                <td class="fw-bold text-success">{{ "%.2f"|format(r.net or 0) }}</td>
+                <td><small>{{ r.message }}</small></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div></div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('calcMode').addEventListener('change', function() {
+    document.getElementById('singleEmpGroup').style.display = this.value === 'single' ? '' : 'none';
+});
+</script>
+{% endblock %}

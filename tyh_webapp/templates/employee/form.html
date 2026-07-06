@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}{% if emp %}编辑员工{% else %}新增员工{% endif %} - 员工工资管理系统{% endblock %}
+{% block content %}
+<h5 class="mb-3">
+    <i class="bi bi-{% if emp %}pencil{% else %}plus-lg{% endif %}"></i>
+    {% if emp %}编辑员工{% else %}新增员工{% endif %}
+</h5>
+
+<div class="card shadow-sm">
+    <div class="card-body p-4">
+        <form method="POST">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">员工编号 <span class="text-danger">*</span></label>
+                    <input type="text" name="eno" class="form-control" maxlength="10"
+                           value="{{ emp.eno if emp else '' }}" required
+                           {% if emp %}readonly{% endif %} placeholder="如 E013">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">姓名 <span class="text-danger">*</span></label>
+                    <input type="text" name="ename" class="form-control" maxlength="15"
+                           value="{{ emp.ename if emp else '' }}" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">部门 <span class="text-danger">*</span></label>
+                    <select name="dno" class="form-select" required>
+                        <option value="">请选择部门</option>
+                        {% for d in departments %}
+                        <option value="{{ d[0] }}" {% if emp and emp.dno==d[0] %}selected{% endif %}>
+                            {{ d[0] }} - {{ d[1] }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">职位 <span class="text-danger">*</span></label>
+                    <input type="text" name="position" class="form-control" maxlength="50"
+                           value="{{ emp.position if emp else '' }}" required placeholder="如 技术总监">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">职级 <span class="text-danger">*</span></label>
+                    <select name="level" class="form-select" required>
+                        <option value="">请选择职级</option>
+                        {% for l in ['P1','P2','P3','P4'] %}
+                        <option value="{{ l }}" {% if emp and emp.level==l %}selected{% endif %}>{{ l }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">身份证号 <span class="text-danger">*</span></label>
+                    <input type="text" name="idcard" class="form-control" maxlength="20"
+                           value="{{ emp.idcard if emp else '' }}" required placeholder="18位身份证号">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">手机号 <span class="text-danger">*</span></label>
+                    <input type="text" name="phone" class="form-control" maxlength="15"
+                           value="{{ emp.phone if emp else '' }}" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">邮箱 <span class="text-danger">*</span></label>
+                    <input type="email" name="email" class="form-control" maxlength="50"
+                           value="{{ emp.email if emp else '' }}" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">地址 <span class="text-danger">*</span></label>
+                    <input type="text" name="address" class="form-control" maxlength="100"
+                           value="{{ emp.address if emp else '' }}" required>
+                </div>
+            </div>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> 保存</button>
+                <a href="{{ url_for('employee.list') }}" class="btn btn-outline-secondary">取消</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

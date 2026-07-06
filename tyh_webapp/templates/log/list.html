@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}审计日志 - 员工工资管理系统{% endblock %}
+{% block content %}
+<h5 class="mb-3"><i class="bi bi-journal-text"></i> 审计日志 <small class="text-muted">（最近180天，共 {{ total }} 条）</small></h5>
+
+<form class="row g-2 mb-3">
+    <div class="col-md-4">
+        <select name="op_type" class="form-select form-select-sm" onchange="this.form.submit()">
+            <option value="">全部操作类型</option>
+            {% for ot in op_types %}
+            <option value="{{ ot[0] }}" {% if op_type == ot[0] %}selected{% endif %}>{{ ot[0] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
+        <a href="{{ url_for('log.list') }}" class="btn btn-outline-secondary btn-sm">重置</a>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover table-sm align-middle">
+        <thead class="table-light"><tr>
+            <th>ID</th><th>操作用户</th><th>操作类型</th><th>详情</th><th>时间</th>
+        </tr></thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log[0] }}</td>
+                <td>{{ log[1] or '系统' }}</td>
+                <td><span class="badge bg-secondary">{{ log[2] }}</span></td>
+                <td><small>{{ log[3] }}</small></td>
+                <td><small>{{ log[4] }}</small></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center py-4 text-muted">暂无操作日志</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- 分页 -->
+{% if total_pages > 1 %}
+<nav>
+    <ul class="pagination pagination-sm justify-content-center">
+        <li class="page-item {{ 'disabled' if page <= 1 }}">
+            <a class="page-link" href="?page={{ page-1 }}&op_type={{ op_type }}">上一页</a>
+        </li>
+        {% for p in range(1, total_pages + 1) %}
+        <li class="page-item {{ 'active' if p == page }}">
+            <a class="page-link" href="?page={{ p }}&op_type={{ op_type }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+        <li class="page-item {{ 'disabled' if page >= total_pages }}">
+            <a class="page-link" href="?page={{ page+1 }}&op_type={{ op_type }}">下一页</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

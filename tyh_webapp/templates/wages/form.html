@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{% if wage %}编辑工资标准{% else %}新增工资标准{% endif %}{% endblock %}
+{% block content %}
+<h5 class="mb-3"><i class="bi bi-{% if wage %}pencil{% else %}plus-lg{% endif %}"></i> {% if wage %}编辑工资标准{% else %}新增工资标准{% endif %}</h5>
+<div class="card shadow-sm"><div class="card-body p-4">
+<form method="POST">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label class="form-label">部门 <span class="text-danger">*</span></label>
+            <select name="dno" class="form-select" required {% if wage %}disabled{% endif %}>
+                <option value="">请选择</option>
+                {% for d in departments %}
+                <option value="{{ d[0] }}" {% if wage and wage.dno==d[0] %}selected{% endif %}>{{ d[0] }} - {{ d[1] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">职位 <span class="text-danger">*</span></label>
+            <input type="text" name="position" class="form-control" maxlength="50"
+                   value="{{ wage.position if wage else '' }}" required {% if wage %}readonly{% endif %}>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">职级 <span class="text-danger">*</span></label>
+            <select name="level" class="form-select" required {% if wage %}disabled{% endif %}>
+                <option value="">请选择</option>
+                {% for l in ['P1','P2','P3','P4'] %}
+                <option value="{{ l }}" {% if wage and wage.level==l %}selected{% endif %}>{{ l }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4"><label class="form-label">基础工资</label><input type="number" step="0.01" name="basics" class="form-control" value="{{ wage.basics if wage else '0' }}" required></div>
+        <div class="col-md-4"><label class="form-label">津贴</label><input type="number" step="0.01" name="extra" class="form-control" value="{{ wage.extra if wage else '0' }}" required></div>
+        <div class="col-md-4"><label class="form-label">公积金</label><input type="number" step="0.01" name="gjj" class="form-control" value="{{ wage.gjj if wage else '0' }}" required></div>
+        <div class="col-md-4"><label class="form-label">社保</label><input type="number" step="0.01" name="shebao" class="form-control" value="{{ wage.shebao if wage else '0' }}" required></div>
+        <div class="col-md-4"><label class="form-label">餐补</label><input type="number" step="0.01" name="riceextra" class="form-control" value="{{ wage.riceextra if wage else '0' }}" required></div>
+        <div class="col-md-4"><label class="form-label">交通补贴</label><input type="number" step="0.01" name="trafficextra" class="form-control" value="{{ wage.trafficextra if wage else '0' }}" required></div>
+    </div>
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> 保存</button>
+        <a href="{{ url_for('wages.list') }}" class="btn btn-outline-secondary">取消</a>
+    </div>
+</form>
+</div></div>
+{% endblock %}

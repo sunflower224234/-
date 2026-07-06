@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}工资标准 - 员工工资管理系统{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5><i class="bi bi-cash-stack"></i> 工资标准管理</h5>
+    {% if session.role_ids and (1 in session.role_ids or 3 in session.role_ids) %}
+    <a href="{{ url_for('wages.create') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> 新增标准</a>
+    {% endif %}
+</div>
+<div class="table-responsive">
+    <table class="table table-hover table-sm align-middle">
+        <thead class="table-light"><tr>
+            <th>部门</th><th>职位</th><th>职级</th><th>基础工资</th><th>津贴</th>
+            <th>公积金</th><th>社保</th><th>餐补</th><th>交通补贴</th><th>操作</th>
+        </tr></thead>
+        <tbody>
+            {% for w in wages %}
+            <tr>
+                <td>{{ w[8] or w[0] }}</td><td>{{ w[1] }}</td><td><span class="badge bg-secondary">{{ w[2] }}</span></td>
+                <td>{{ "%.0f"|format(w[3]) }}</td><td>{{ "%.0f"|format(w[4]) }}</td>
+                <td>{{ "%.0f"|format(w[5]) }}</td><td>{{ "%.0f"|format(w[6]) }}</td>
+                <td>{{ "%.0f"|format(w[7]) }}</td><td>{{ "%.0f"|format(w[8]) }}</td>
+                <td>
+                    {% if session.role_ids and (1 in session.role_ids or 3 in session.role_ids) %}
+                    <a href="{{ url_for('wages.edit', dno=w[0], position=w[1], level=w[2]) }}" class="btn btn-sm btn-outline-warning" title="编辑"><i class="bi bi-pencil"></i></a>
+                    {% endif %}
+                    {% if session.role_ids and 1 in session.role_ids %}
+                    <form method="POST" action="{{ url_for('wages.delete', dno=w[0], position=w[1], level=w[2]) }}" class="d-inline"
+                          onsubmit="return confirm('确认删除此工资标准？')">
+                        <button class="btn btn-sm btn-outline-danger" title="删除"><i class="bi bi-trash"></i></button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="10" class="text-center py-4 text-muted">暂无工资标准</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

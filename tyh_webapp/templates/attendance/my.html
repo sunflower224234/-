@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}我的考勤 - 员工工资管理系统{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5><i class="bi bi-calendar-check"></i> 我的考勤记录</h5>
+</div>
+
+<form class="row g-2 mb-3">
+    <div class="col-auto">
+        <label class="col-form-label col-form-label-sm fw-semibold">年份：</label>
+    </div>
+    <div class="col-auto">
+        <select name="year" class="form-select form-select-sm" onchange="this.form.submit()">
+            {% for y in range(2024, 2029) %}
+            <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}年</option>
+            {% endfor %}
+        </select>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover table-sm align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>月份</th><th>应出勤</th><th>实际出勤</th><th>迟到/早退</th>
+                <th>加班</th><th>全勤奖</th><th>缺勤扣款</th><th>其他扣款</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in records %}
+            <tr>
+                <td class="fw-semibold">{{ r[2] }}月</td>
+                <td>{{ r[3] }} 天</td>
+                <td>{{ r[4] }} 天</td>
+                <td>{{ r[5] }} 次</td>
+                <td>{{ r[6] if r[6] else '--' }}</td>
+                <td>¥{{ "%.2f"|format(r[7] or 0) }}</td>
+                <td class="text-danger">¥{{ "%.2f"|format(r[8] or 0) }}</td>
+                <td class="text-danger">¥{{ "%.2f"|format(r[9] or 0) }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8" class="text-center py-4 text-muted">{{ year }}年暂无考勤记录</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
